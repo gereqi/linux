@@ -1,7 +1,9 @@
 TAR & ZIP compress many files into one:
-```tar -cvf -  file-name-29012016-09h51*txt | gzip -c > file-name-29012016-09h51.tar.gz```
+```
+tar -cvf -  file-name-29012016-09h51*txt | gzip -c > file-name-29012016-09h51.tar.gz
+```
 OR
-`tar cf new-tar-file.tar files*.ext`
+```tar cf new-tar-file.tar files*.ext```
 OR
 `tar -cvf allfiles.tar -T mylist`	(where you create mylist with `ls -lrt | awk '{print $9}'`)
 
