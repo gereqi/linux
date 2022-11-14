@@ -1,0 +1,23 @@
+TAR & ZIP compress many files into one:
+tar -cvf -  export-prod-29012016-09h51*dmp | gzip -c > export-prod-29012016-09h51.tar.gz
+OR
+tar cf new-tar-file.tar files*.ext
+OR
+tar -cvf allfiles.tar -T mylist	(where you create mylist with ls -lrt | awk '{print $9}')
+
+Remove many files without asking (AIX doesn't need the -f):
+rm -f sgbp01_18*nmon
+
+GZIP compress a single file:
+gzip filename.ext
+ OR
+gzip file*.ext (will compress each separately)
+ OR
+gzip -r directory (recursively all files it finds in directory)
+gzip directory/* (all files it finds inside directory without recursively search)
+
+GZIP uncompress:
+gzip -d sgbp01_18.gz
+
+UNTAR and GZIP uncompress:
+gunzip -c sgbp01_160304_1300.nmon.tar.gz | tar -xvf - 
