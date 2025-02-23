@@ -1,0 +1,48 @@
+- name: Gracefully shutdown Kubernetes cluster running in Rancher Desktop on Windows 10
+  hosts: localhost
+  connection: local
+  tasks:
+
+    - name: Set KUBECONFIG variable for Ansible session
+      set_fact:
+        kubeconfig_path: "/mnt/c/Users/user/.kube/config"
+
+    - name: Get Kubernetes nodes
+      command: kubectl get nodes --no-headers -o custom-columns=":metadata.name"
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      register: node_name_result
+      ignore_errors: yes
+
+    - name: Extract first node name
+      set_fact:
+        node_name: "{{ node_name_result.stdout_lines[0] | default('rancher-desktop') }}"
+
+    - name: Drain Kubernetes node before shutdown
+      command: kubectl drain {{ node_name }} --ignore-daemonsets --force --grace-period=5
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      register: drain_result
+      ignore_errors: yes
+
+    - name: Print drain output
+      debug:
+        msg: "{{ drain_result.stdout }}"
+
+    - name: Stop Rancher Desktop via PowerShell
+      command: powershell.exe -Command "Stop-Process -Name 'Rancher Desktop' -Force"
+      register: rd_shutdown_result
+      ignore_errors: yes
+
+    - name: Print Rancher Desktop shutdown output
+      debug:
+        msg: "{{ rd_shutdown_result.stdout }}"
+
+    - name: Stop containerd runtime
+      command: nerdctl system prune -a -f
+      register: prune_result
+      ignore_errors: yes
+
+    - name: Print containerd prune output
+      debug:
+        msg: "{{ prune_result.stdout }}"
